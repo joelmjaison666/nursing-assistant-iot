@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>❤️ IoT Health Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        :root {
+            --primary-color: #00ff8c;
+            --secondary-color: #00a1ff;
+            --warning-color: #ff7b00;
+            --danger-color: #ff003c;
+            --background-dark: #050518;
+            --card-bg: rgba(10, 20, 40, 0.8);
+            --text-color: #eef1f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--background-dark);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Live background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        header {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: #000;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(0, 255, 140, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #000, #222);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.3);
+        }
+
+        .connection-pill {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .connected {
+            background-color: var(--primary-color);
+            color: #000;
+        }
+
+        .disconnected {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .dashboard-card {
+            border-radius: 15px;
+            padding: 20px;
+            background: var(--card-bg);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            opacity: 0.7;
+        }
+
+        .card-alert::before {
+            background: linear-gradient(90deg, var(--danger-color), var(--warning-color));
+            animation: alertPulse 2s infinite;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            opacity: 0.7;
+        }
+
+        .bpm-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .bpm-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--secondary-color);
+            text-shadow: 0 0 20px rgba(0, 161, 255, 0.5);
+            position: relative;
+        }
+
+        .bpm-unit {
+            font-size: 1rem;
+            margin-left: 5px;
+            opacity: 0.7;
+        }
+
+        .heart-icon {
+            color: var(--danger-color);
+            margin-right: 10px;
+            animation: heartbeat 1.5s ease infinite;
+            font-size: 2.5rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .status-normal {
+            background-color: rgba(0, 255, 140, 0.2);
+            color: var(--primary-color);
+        }
+
+        .status-warning {
+            background-color: rgba(255, 123, 0, 0.2);
+            color: var(--warning-color);
+        }
+
+        .status-alert {
+            background-color: rgba(255, 0, 60, 0.2);
+            color: var(--danger-color);
+            animation: blink 1s infinite;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .metric-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--secondary-color);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 200px;
+            margin-top: 15px;
+        }
+
+        .chart-filled {
+            width: 100%;
+            height: 250px;
+        }
+
+        .grid-span-2 {
+            grid-column: span 2;
+        }
+
+        /* Animations */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+        }
+
+        @keyframes alertPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes floatingIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .floating-icon {
+            animation: floatingIcon 2s ease-in-out infinite;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            opacity: 0.2;
+        }
+
+        /* Pulse animation for BPM value */
+        .pulse-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(0, 161, 255, 0.1);
+            position: absolute;
+            z-index: -1;
+            transform: scale(1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 161, 255, 0.5);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 20px rgba(0, 161, 255, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 161, 255, 0);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-title {
+                font-size: 1.5rem;
+            }
+            
+            .bpm-value {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Dark mode toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: blink 1s infinite;
+        }
+
+        .card-subtitle {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        /* Fall Detection Shaking Animation */
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* Wave animation for fluid flow */
+        .wave-container {
+            position: relative;
+            height: 60px;
+            overflow: hidden;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50%;
+            background-color: rgba(0, 161, 255, 0.2);
+            border-radius: 0 0 8px 8px;
+        }
+
+        .wave::before, .wave::after {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -75%);
+            border-radius: 40%;
+        }
+
+        .wave::before {
+            background-color: rgba(0, 161, 255, 0.3);
+            animation: wave 7s linear infinite;
+        }
+
+        .wave::after {
+            background-color: rgba(0, 161, 255, 0.2);
+            animation: wave 15s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { transform: translate(-50%, -75%) rotate(0deg); }
+            100% { transform: translate(-50%, -75%) rotate(360deg); }
+        }
+
+        .temperature-gauge {
+            height: 120px;
+            position: relative;
+            margin: 20px auto;
+            width: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .temperature-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, var(--primary-color), var(--secondary-color), var(--warning-color), var(--danger-color));
+            border-radius: 0 0 20px 20px;
+            transition: height 1s ease;
+        }
+
+        .temperature-bulb {
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(to top, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+        }
+
+        .temperature-marks {
+            position: absolute;
+            top: 0;
+            left: 35px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .temperature-mark {
+            display: flex;
+            align-items: center;
+        }
+
+        .temperature-mark::before {
+            content: '';
+            width: 5px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.5);
+            margin-right: 5px;
+        }
+
+        .temperature-value {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        /* Alert badge */
+        .alert-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 25px;
+            height: 25px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            animation: bounce 1s infinite;
+            visibility: hidden;
+        }
+
+        .has-alert .alert-badge {
+            visibility: visible;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Summary section */
+        .summary-section {
+            margin-top: 30px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .summary-heading {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .summary-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--secondary-color);
+        }
+
+        /* Time display */
+        .time-display {
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            align-items: center;
+            color: #000;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+
+        .time-icon {
+            margin-right: 5px;
+        }
+
+        /* Alert history scroll */
+        .alert-history {
+            height: 150px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border-radius: 8px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) rgba(255, 255, 255, 0.1);
+        }
+
+        .alert-history::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .alert-history::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .alert-history::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .alert-item {
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            border-left: 3px solid var(--primary-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .alert-item.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .alert-item.danger {
+            border-left-color: var(--danger-color);
+        }
+
+        .alert-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Add glow effect to data values */
+        .glow-text {
+            text-shadow: 0 0 10px currentColor;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Particles background -->
+    <div id="particles-js"></div>
+
+    <header>
+        <div class="header-content">
+            <h1 class="header-title">
+                <span class="heart-icon">❤️</span> IoT Health Dashboard
+            </h1>
+            <div class="time-display">
+                <span class="time-icon">⏱️</span>
+                <span id="currentTime">--:--:--</span>
+            </div>
+            <div id="connectionStatus" class="connection-pill disconnected">🔴 Disconnected</div>
+        </div>
+    </header>
+
+    <main>
+        <div class="dashboard-grid">
+            <!-- Heart Rate Monitor Card -->
+            <div id="heartRateCard" class="dashboard-card animate__animated animate__fadeIn">
+                <div class="card-header">
+                    <h2 class="card-title">Heart Rate Monitor</h2>
+                    <span class="card-icon">❤️</span>
+                </div>
+                <div class="card-subtitle">
+                    <span class="live-indicator"></span> Live Monitoring
+                </div>
+                <div class="bpm-display">
+                    <div class="pulse-circle"></div>
+                    <div class="bpm-value" id="bpmValue">--<span class="bpm-unit">BPM</span></div>
+                </div>
+                <div id="bpmStatus" class="status-indicator">Waiting for data...</div>
+                <div class="chart-container">
+                    <canvas id="bpmChart"></canvas>
+                </div>
+                <div class="floating-icon">❤️</div>
+                <div class="alert-badge">!</div>
+            </div>
+
+            <!-- Fall Detection Card -->
+            <div id="fallDetectionCard" class="dashboard-card animate__animated animate__fadeIn animate__delay-1s">
+                <div class="card-header">
+                    <h2 class="card-title">Fall Detection</h2>
+                    <span class="card-icon">⚠️</span>
+                </div>
+                <div class="card-subtitle">
+                    <span class="live-indicator"></span> Real-time Monitoring
+                </div>
+                <div id="fallStatus" class="status-indicator">Waiting for fall detection data...</div>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-label">X-Axis</div>
+                        <div class="metric-value" id="accelX">--</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Y-Axis</div>
+                        <div class="metric-value" id="accelY">--</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Z-Axis</div>
+                        <div class="metric-value" id="accelZ">--</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Total G</div>
+                        <div class="metric-value" id="totalG">--</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="accelChart"></canvas>
+                </div>
+                <div class="floating-icon">📊</div>
+                <div class="alert-badge">!</div>
+            </div>
+
+            <!-- IV Drip Pressure Card -->
+            <div id="ivDripCard" class="dashboard-card animate__animated animate__fadeIn animate__delay-2s">
+                <div class="card-header">
+                    <h2 class="card-title">IV Drip Pressure</h2>
+                    <span class="card-icon">💧</span>
+                </div>
+                <div class="card-subtitle">
+                    <span class="live-indicator"></span> Flow Monitoring
+                </div>
+                <div id="ivDripStatus" class="status-indicator">Waiting for IV Drip data...</div>
+                <div class="wave-container">
+                    <div class="wave"></div>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-label">Current Pressure</div>
+                        <div class="metric-value glow-text" id="ivDripPressure">-- <span class="bpm-unit">kPa</span></div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Flow Status</div>
+                        <div class="metric-value" id="flowStatus">--</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="ivDripChart"></canvas>
+                </div>
+                <div class="floating-icon">💧</div>
+                <div class="alert-badge">!</div>
+            </div>
+
+            <!-- Temperature Sensor Card -->
+            <div id="temperatureCard" class="dashboard-card animate__animated animate__fadeIn animate__delay-3s">
+                <div class="card-header">
+                    <h2 class="card-title">Body Temperature</h2>
+                    <span class="card-icon">🌡️</span>
+                </div>
+                <div class="card-subtitle">
+                    <span class="live-indicator"></span> Continuous Monitoring
+                </div>
+                <div id="tempStatus" class="status-indicator">Waiting for temperature data...</div>
+                <div style="display: flex; align-items: center; justify-content: center; margin: 15px 0;">
+                    <div class="temperature-gauge">
+                        <div class="temperature-fill" id="tempFill" style="height: 0%"></div>
+                        <div class="temperature-bulb"></div>
+                        <div class="temperature-marks">
+                            <div class="temperature-mark"><span class="temperature-value">40°</span></div>
+                            <div class="temperature-mark"><span class="temperature-value">38°</span></div>
+                            <div class="temperature-mark"><span class="temperature-value">36°</span></div>
+                            <div class="temperature-mark"><span class="temperature-value">34°</span></div>
+                        </div>
+                    </div>
+                    <div style="margin-left: 30px;">
+                        <div class="metric-value glow-text" id="tempValue" style="font-size: 3rem;">--<span class="bpm-unit">°C</span></div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="tempChart"></canvas>
+                </div>
+                <div class="floating-icon">🌡️</div>
+                <div class="alert-badge">!</div>
+            </div>
+
+            <!-- Historical Data Card (2 columns wide) -->
+            <div class="dashboard-card grid-span-2 animate__animated animate__fadeIn animate__delay-4s">
+                <div class="card-header">
+                    <h2 class="card-title">Health Data Overview</h2>
+                    <span class="card-icon">📊</span>
+                </div>
+                <div class="chart-filled">
+                    <canvas id="overviewChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Alert History Card -->
+            <div class="dashboard-card animate__animated animate__fadeIn animate__delay-5s">
+                <div class="card-header">
+                    <h2 class="card-title">Alert History</h2>
+                    <span class="card-icon">🚨</span>
+                </div>
+                <div class="alert-history" id="alertHistory">
+                    <!-- Alert items will be added here dynamically -->
+                </div>
+            </div>
+
+            <!-- Summary Stats Card -->
+            <div class="dashboard-card animate__animated animate__fadeIn animate__delay-6s">
+                <div class="card-header">
+                    <h2 class="card-title">System Status</h2>
+                    <span class="card-icon">📋</span>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-label">Uptime</div>
+                        <div class="metric-value" id="uptime">--:--:--</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Data Points</div>
+                        <div class="metric-value" id="dataPoints">0</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Alerts Today</div>
+                        <div class="metric-value" id="alertCount">0</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Last Update</div>
+                        <div class="metric-value" id="lastUpdate">--:--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary section -->
+        <div class="summary-section animate__animated animate__fadeIn animate__delay-7s">
+            <h2 class="summary-heading">Patient Health Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Avg Heart Rate</div>
+                    <div class="summary-value" id="avgHeartRate">--</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Avg Temperature</div>
+                    <div class="summary-value" id="avgTemperature">--</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">IV Status</div>
+                    <div class="summary-value" id="ivSummary">--</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Falls Detected</div>
+                    <div class="summary-value" id="fallsDetected">0</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Theme toggle button -->
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+
+    <!-- Audio alerts -->
+    <audio id="fallAlertSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"></audio>
+    <audio id="heartRateAlertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+    <audio id="ivAlertSound" src="https://actions.google.com/sounds/v1/alarms/medium_bell_ringing_near.ogg"></audio>
+    <audio id="tempAlertSound" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"></audio>
+
+    <!-- Libraries -->
+<script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+
+<script>
+    // Initialize particles.js for the background
+    particlesJS("particles-js", {
+        "particles": {
+            "number": {
+                "value": 80,
+                "density": { "enable": true, "value_area": 800 }
+            },
+            "color": { "value": "#00a1ff" },
+            "shape": {
+                "type": "circle",
+                "stroke": { "width": 0, "color": "#000000" },
+                "polygon": { "nb_sides": 5 }
+            },
+            "opacity": {
+                "value": 0.3,
+                "random": true,
+                "anim": { "enable": false, "speed": 1, "opacity_min": 0.1, "sync": false }
+            },
+            "size": {
+                "value": 3,
+                "random": true,
+                "anim": { "enable": false, "speed": 40, "size_min": 0.1, "sync": false }
+            },
+            "line_linked": {
+                "enable": true,
+                "distance": 150,
+                "color": "#00a1ff",
+                "opacity": 0.2,
+                "width": 1
+            },
+            "move": {
+                "enable": true,
+                "speed": 2,
+                "direction": "none",
+                "random": false,
+                "straight": false,
+                "out_mode": "out",
+                "bounce": false,
+                "attract": { "enable": false, "rotateX": 600, "rotateY": 1200 }
+            }
+        },
+        "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+                "onhover": { "enable": true, "mode": "grab" },
+                "onclick": { "enable": true, "mode": "push" },
+                "resize": true
+            },
+            "modes": {
+                "grab": { "distance": 140, "line_linked": { "opacity": 0.5 } },
+                "bubble": { "distance": 400, "size": 40, "duration": 2, "opacity": 8, "speed": 3 },
+                "repulse": { "distance": 200, "duration": 0.4 },
+                "push": { "particles_nb": 4 },
+                "remove": { "particles_nb": 2 }
+            }
+        },
+        "retina_detect": true
+    });
+
+    // Socket.IO connection
+    const socket = io('http://172.20.10.4:5000');
+
+    // Global variables
+    let startTime = new Date();
+    let dataPointsCount = 0;
+    let alertsCount = 0;
+    let fallsDetected = 0;
+    let heartRateValues = [];
+    let temperatureValues = [];
+    let ivPressureValues = [];
+    let accelGValues = [];
+
+    // Update current time
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+        
+        // Calculate uptime
+        const diff = now - startTime;
+        const hours = Math.floor(diff / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        document.getElementById('uptime').textContent = 
+            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Add alert to history
+    function addAlert(message, type = 'normal') {
+        const alertHistory = document.getElementById('alertHistory');
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        
+        const alertItem = document.createElement('div');
+        alertItem.className = `alert-item ${type} animate__animated animate__fadeInDown`;
+        alertItem.innerHTML = `
+            <span>${message}</span>
+            <span class="alert-time">${timeString}</span>
+        `;
+        
+        alertHistory.prepend(alertItem);
+        
+        // Keep only the last 20 alerts
+        const alerts = alertHistory.querySelectorAll('.alert-item');
+        if (alerts.length > 20) {
+            alertHistory.removeChild(alerts[alerts.length - 1]);
+        }
+        
+        // Update alert count
+        alertsCount++;
+        document.getElementById('alertCount').textContent = alertsCount;
+    }
+
+    // Calculate and update summary statistics
+    function updateSummaryStats() {
+        // Average heart rate
+        if (heartRateValues.length > 0) {
+            const avgHR = heartRateValues.reduce((sum, val) => sum + val, 0) / heartRateValues.length;
+            document.getElementById('avgHeartRate').textContent = avgHR.toFixed(1) + ' BPM';
+        }
+        
+        // Average temperature
+        if (temperatureValues.length > 0) {
+            const avgTemp = temperatureValues.reduce((sum, val) => sum + val, 0) / temperatureValues.length;
+            document.getElementById('avgTemperature').textContent = avgTemp.toFixed(2) + ' °C';
+        }
+        
+        // Falls detected
+        document.getElementById('fallsDetected').textContent = fallsDetected;
+    }
+
+    // Connection status updates
+    socket.on('connect', () => {
+        console.log("✅ Connected to Flask-SocketIO Server!");
+        const connectionStatus = document.getElementById('connectionStatus');
+        connectionStatus.textContent = "🟢 Connected";
+        connectionStatus.classList.remove('disconnected');
+        connectionStatus.classList.add('connected');
+        
+        addAlert("Connected to IoT Health Monitoring System", "normal");
+    });
+
+    socket.on('disconnect', () => {
+        console.log("❌ Disconnected from Flask-SocketIO Server!");
+        const connectionStatus = document.getElementById('connectionStatus');
+        connectionStatus.textContent = "🔴 Disconnected";
+        connectionStatus.classList.remove('connected');
+        connectionStatus.classList.add('disconnected');
+        
+        addAlert("Disconnected from IoT Health Monitoring System", "danger");
+    });
+
+    // Initialize Charts
+    Chart.defaults.color = 'rgba(255, 255, 255, 0.7)';
+    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+    
+    // Heart Rate Chart
+    const ctxBPM = document.getElementById('bpmChart').getContext('2d');
+    const chartBPM = new Chart(ctxBPM, {
+        type: 'line',
+        data: {
+            labels: Array(10).fill(''),
+            datasets: [{
+                label: 'BPM',
+                data: Array(10).fill(null),
+                borderColor: '#00a1ff',
+                borderWidth: 2,
+                fill: true,
+                backgroundColor: 'rgba(0, 161, 255, 0.1)',
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: '#00a1ff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { display: false },
+                y: { 
+                    beginAtZero: false,
+                    min: 40,
+                    max: 140,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            },
+            animation: {
+                duration: 500
+            }
+        }
+    });
+
+    // IV Drip Chart
+    const ctxIVDrip = document.getElementById('ivDripChart').getContext('2d');
+    const chartIVDrip = new Chart(ctxIVDrip, {
+        type: 'line',
+        data: {
+            labels: Array(10).fill(''),
+            datasets: [{
+                label: 'Pressure (kPa)',
+                data: Array(10).fill(null),
+                borderColor: '#00ff8c',
+                borderWidth: 2,
+                fill: true,
+                backgroundColor: 'rgba(0, 255, 140, 0.1)',
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: '#00ff8c'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { display: false },
+                y: { 
+                    beginAtZero: true,
+                    suggestedMax: 1,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            },
+            animation: {
+                duration: 500
+            }
+        }
+    });
+
+    // Temperature Chart
+    const ctxTemp = document.getElementById('tempChart').getContext('2d');
+    const chartTemp = new Chart(ctxTemp, {
+        type: 'line',
+        data: {
+            labels: Array(10).fill(''),
+            datasets: [{
+                label: 'Temperature (°C)',
+                data: Array(10).fill(null),
+                borderColor: '#ff7b00',
+                borderWidth: 2,
+                fill: true,
+                backgroundColor: 'rgba(255, 123, 0, 0.1)',
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: '#ff7b00'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { display: false },
+                y: { 
+                    beginAtZero: false,
+                    min: 34,
+                    max: 40,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            },
+            animation: {
+                duration: 500
+            }
+        }
+    });
+
+    // Acceleration Chart
+    const ctxAccel = document.getElementById('accelChart').getContext('2d');
+    const chartAccel = new Chart(ctxAccel, {
+        type: 'line',
+        data: {
+            labels: Array(10).fill(''),
+            datasets: [{
+                label: 'Total G',
+                data: Array(10).fill(null),
+                borderColor: '#ff003c',
+                borderWidth: 2,
+                fill: true,
+                backgroundColor: 'rgba(255, 0, 60, 0.1)',
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: '#ff003c'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { display: false },
+                y: { 
+                    beginAtZero: true,
+                    suggestedMax: 5,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            },
+            animation: {
+                duration: 500
+            }
+        }
+    });
+
+    // Overview Chart (combined data)
+    const ctxOverview = document.getElementById('overviewChart').getContext('2d');
+    const chartOverview = new Chart(ctxOverview, {
+        type: 'line',
+        data: {
+            labels: Array(20).fill(''),
+            datasets: [
+                {
+                    label: 'Heart Rate (BPM)',
+                    data: Array(20).fill(null),
+                    borderColor: '#00a1ff',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#00a1ff',
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Temperature (°C)',
+                    data: Array(20).fill(null),
+                    borderColor: '#ff7b00',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#ff7b00',
+                    yAxisID: 'y1'
+                },
+                {
+                    label: 'IV Pressure (kPa)',
+                    data: Array(20).fill(null),
+                    borderColor: '#00ff8c',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#00ff8c',
+                    yAxisID: 'y2'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            stacked: false,
+            scales: {
+                x: { 
+                    display: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)'
+                    }
+                },
+                y: { 
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Heart Rate (BPM)'
+                    },
+                    min: 40,
+                    max: 140,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Temperature (°C)'
+                    },
+                    min: 34,
+                    max: 40,
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                },
+                y2: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'IV Pressure (kPa)'
+                    },
+                    min: 0,
+                    max: 1,
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Helper function to add data to charts
+    function addDataToChart(chart, data) {
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data.push(data);
+            dataset.data.shift();
+        });
+        chart.update();
+    }
+
+    // Add data to overview chart
+    function addDataToOverviewChart(heartRate, temperature, ivPressure) {
+        const timestamp = new Date().toLocaleTimeString();
+        
+        // Update labels
+        chartOverview.data.labels.push(timestamp);
+        chartOverview.data.labels.shift();
+        
+        // Update datasets
+        if (heartRate !== null) {
+            chartOverview.data.datasets[0].data.push(heartRate);
+            chartOverview.data.datasets[0].data.shift();
+        }
+        
+        if (temperature !== null) {
+            chartOverview.data.datasets[1].data.push(temperature);
+            chartOverview.data.datasets[1].data.shift();
+        }
+        
+        if (ivPressure !== null) {
+            chartOverview.data.datasets[2].data.push(ivPressure);
+            chartOverview.data.datasets[2].data.shift();
+        }
+        
+        chartOverview.update();
+    }
+
+    // Process incoming data
+    socket.on('update_dashboard', (data) => {
+        console.log("📨 Data from server:", data);
+        
+        // Update total data points count
+        dataPointsCount++;
+        document.getElementById('dataPoints').textContent = dataPointsCount;
+        
+        // Update last update time
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+
+        // Heart Rate Sensor
+        if (data.sensor === 'heart_rate') {
+            const bpm = data.bpm;
+            const bpmValue = document.getElementById('bpmValue');
+            const heartRateCard = document.getElementById('heartRateCard');
+            const bpmStatus = document.getElementById('bpmStatus');
+            
+            // Store value for statistics
+            heartRateValues.push(bpm);
+            if (heartRateValues.length > 50) heartRateValues.shift();
+            
+            // Update display
+            bpmValue.innerHTML = bpm + "<span class='bpm-unit'>BPM</span>";
+            bpmValue.classList.add('glow-text');
+            setTimeout(() => bpmValue.classList.remove('glow-text'), 1000);
+
+            // Check status
+            if (bpm < 60) {
+                bpmStatus.textContent = "⚠️ Low Heart Rate";
+                bpmStatus.className = "status-indicator status-warning";
+                heartRateCard.classList.add('card-alert');
+                document.getElementById('heartRateAlertSound').play();
+                addAlert(`Low heart rate detected: ${bpm} BPM`, "warning");
+            } else if (bpm > 100) {
+                bpmStatus.textContent = "🚨 High Heart Rate";
+                bpmStatus.className = "status-indicator status-alert";
+                heartRateCard.classList.add('card-alert');
+                document.getElementById('heartRateAlertSound').play();
+                addAlert(`High heart rate detected: ${bpm} BPM`, "danger");
+            } else {
+                bpmStatus.textContent = "✅ Normal Heart Rate";
+                bpmStatus.className = "status-indicator status-normal";
+                heartRateCard.classList.remove('card-alert');
+            }
+
+            // Update chart
+            addDataToChart(chartBPM, bpm);
+            addDataToOverviewChart(bpm, null, null);
+            
+            // Update summary statistics
+            updateSummaryStats();
+        }
+
+        // Fall Detection Sensor
+        else if (data.sensor === 'fall_detector') {
+            const fallStatus = document.getElementById('fallStatus');
+            const fallDetectionCard = document.getElementById('fallDetectionCard');
+
+            // Update display
+            if (data.status === 'YES' || data.status === 'fall_detected') {
+                fallStatus.textContent = "🚨 Fall Detected!";
+                fallStatus.className = "status-indicator status-alert";
+                fallDetectionCard.classList.add('card-alert', 'shake');
+                document.getElementById('fallAlertSound').play();
+                
+                // Increment fall counter
+                fallsDetected++;
+                document.getElementById('fallsDetected').textContent = fallsDetected;
+                
+                // Add alert
+                addAlert("Fall detected! Immediate assistance may be required.", "danger");
+                
+                // Remove shake animation after 2 seconds
+                setTimeout(() => fallDetectionCard.classList.remove('shake'), 2000);
+            } else {
+                fallStatus.textContent = "✅ No Fall Detected";
+                fallStatus.className = "status-indicator status-normal";
+                fallDetectionCard.classList.remove('card-alert');
+            }
+
+            // Update accelerometer display
+            if (data.accel) {
+                document.getElementById('accelX').textContent = data.accel.x.toFixed(2);
+                document.getElementById('accelY').textContent = data.accel.y.toFixed(2);
+                document.getElementById('accelZ').textContent = data.accel.z.toFixed(2);
+                
+                // Add animation for changing values
+                const accelValues = document.querySelectorAll('.metric-value');
+                accelValues.forEach(val => {
+                    val.classList.add('glow-text');
+                    setTimeout(() => val.classList.remove('glow-text'), 1000);
+                });
+            }
+
+            // Update Total G
+            if (data.total_g !== undefined) {
+                const totalG = data.total_g;
+                document.getElementById('totalG').textContent = totalG.toFixed(2);
+                
+                // Store for statistics
+                accelGValues.push(totalG);
+                if (accelGValues.length > 50) accelGValues.shift();
+                
+                // Update accel chart
+                addDataToChart(chartAccel, totalG);
+            }
+            
+            // Update summary statistics
+            updateSummaryStats();
+        }
+
+        // IV Drip Sensor
+        else if (data.sensor === 'pressure') {
+            const pressure = data.pressure;
+            const ivDripCard = document.getElementById('ivDripCard');
+            const ivDripStatus = document.getElementById('ivDripStatus');
+            const flowStatus = document.getElementById('flowStatus');
+            
+            // Store value for statistics
+            ivPressureValues.push(pressure);
+            if (ivPressureValues.length > 50) ivPressureValues.shift();
+            
+            // Update display
+            document.getElementById('ivDripPressure').innerHTML = pressure.toFixed(3) + "<span class='bpm-unit'>kPa</span>";
+            
+            // Check status
+            if (pressure >= 0.5) {
+                ivDripStatus.textContent = "🚨 Critical: IV Line Blocked";
+                ivDripStatus.className = "status-indicator status-alert";
+                ivDripCard.classList.add('card-alert');
+                flowStatus.textContent = "Blocked";
+                document.getElementById('ivAlertSound').play();
+                addAlert("Critical IV line blockage detected!", "danger");
+            } else if (pressure >= 0.2) {
+                ivDripStatus.textContent = "⚠️ Warning: Partial Blockage";
+                ivDripStatus.className = "status-indicator status-warning";
+                ivDripCard.classList.add('card-alert');
+                flowStatus.textContent = "Restricted";
+                addAlert("IV drip partial blockage detected.", "warning");
+            } else {
+                ivDripStatus.textContent = "✅ Normal IV Flow";
+                ivDripStatus.className = "status-indicator status-normal";
+                ivDripCard.classList.remove('card-alert');
+                flowStatus.textContent = "Normal";
+            }
+            
+            // Update IV Drip summary
+            if (pressure >= 0.5) {
+                document.getElementById('ivSummary').textContent = "Blocked";
+            } else if (pressure >= 0.2) {
+                document.getElementById('ivSummary').textContent = "Restricted";
+            } else {
+                document.getElementById('ivSummary').textContent = "Normal";
+            }
+            
+            // Update chart
+            addDataToChart(chartIVDrip, pressure);
+            addDataToOverviewChart(null, null, pressure);
+            
+            // Update summary statistics
+            updateSummaryStats();
+        }
+
+        // Temperature Sensor
+        else if (data.sensor === 'temperature') {
+            const temp = data.temperature_c;
+            const tempCard = document.getElementById('temperatureCard');
+            const tempStatus = document.getElementById('tempStatus');
+            
+            // Store value for statistics
+            temperatureValues.push(temp);
+            if (temperatureValues.length > 50) temperatureValues.shift();
+            
+            // Update display
+            document.getElementById('tempValue').innerHTML = temp.toFixed(2) + "<span class='bpm-unit'>°C</span>";
+            
+            // Update temperature gauge
+            // Map temperature from 34-40°C to 0-100%
+            const tempPercent = ((temp - 34) / (40 - 34)) * 100;
+            document.getElementById('tempFill').style.height = `${Math.min(100, Math.max(0, tempPercent))}%`;
+            
+            // Check status
+            if (temp >= 38.5) {
+                tempStatus.textContent = "🚨 High Fever";
+                tempStatus.className = "status-indicator status-alert";
+                tempCard.classList.add('card-alert');
+                document.getElementById('tempAlertSound').play();
+                addAlert(`High fever detected: ${temp.toFixed(1)}°C`, "danger");
+            } else if (temp >= 37.5) {
+                tempStatus.textContent = "⚠️ Mild Fever";
+                tempStatus.className = "status-indicator status-warning";
+                tempCard.classList.add('card-alert');
+                addAlert(`Mild fever detected: ${temp.toFixed(1)}°C`, "warning");
+            } else if (temp < 35.5) {
+                tempStatus.textContent = "⚠️ Low Temperature";
+                tempStatus.className = "status-indicator status-warning";
+                tempCard.classList.add('card-alert');
+                addAlert(`Low body temperature: ${temp.toFixed(1)}°C`, "warning");
+            } else {
+                tempStatus.textContent = "✅ Normal Temperature";
+                tempStatus.className = "status-indicator status-normal";
+                tempCard.classList.remove('card-alert');
+            }
+            
+            // Update chart
+            addDataToChart(chartTemp, temp);
+            addDataToOverviewChart(null, temp, null);
+            
+            // Update summary statistics
+            updateSummaryStats();
+        }
+    });
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    let isDarkMode = true;
+
+    themeToggle.addEventListener('click', () => {
+        isDarkMode = !isDarkMode;
+        
+        if (isDarkMode) {
+            document.documentElement.style.setProperty('--background-dark', '#050518');
+            document.documentElement.style.setProperty('--card-bg', 'rgba(10, 20, 40, 0.8)');
+            document.documentElement.style.setProperty('--text-color', '#eef1f7');
+            themeToggle.textContent = '🌙';
+        } else {
+            document.documentElement.style.setProperty('--background-dark', '#f0f4f8');
+            document.documentElement.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.8)');
+            document.documentElement.style.setProperty('--text-color', '#1a2130');
+            themeToggle.textContent = '☀️';
+        }
+        
+        // Update chart colors
+        Chart.defaults.color = isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)';
+        Chart.defaults.borderColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        
+        // Update all charts
+        [chartBPM, chartIVDrip, chartTemp, chartAccel, chartOverview].forEach(chart => chart.update());
+    });
+
+    // Initialize with some simulated alerts for demonstration
+    setTimeout(() => {
+        addAlert("System initialized successfully", "normal");
+        addAlert("Connected to all sensors", "normal");
+    }, 1000);
+</script>
+</body>
+</html>
