@@ -13,3 +13,4 @@ We are developing an IoT-based Nursing Assistant System that continuously monito
 - Scalable & Wireless System that reduces manual workload and human error.
 
 # UI/UX
+![Patient Monitoring Dashboard](ui/Health Overview.jpg)
