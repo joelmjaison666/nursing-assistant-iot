@@ -31,6 +31,18 @@ Our system continuously monitors patients' **vital signs** and **critical events
 
 ---
 
+## 🤖 Hardware Configuration
+
+| **IV Drip** | **Heart Rate** |
+|:----------------:|:----------------:|
+| <img src="Hardware%20Configuration/IV%20Drip%20Hardware.jpg" width="300"> | <img src="Hardware%20Configuration/Heart%20Rate%20Hardware.jpg" width="300"> |
+
+| **Fall Detection** | **Body Temperature** |
+|:----------------:|:----------------:|
+| <img src="Hardware%20Configuration/Fall%20Detection%20Hardware.jpg" width="300"> | <img src="Hardware%20Configuration/Body%20Temperature%20Hardware.jpg" width="300"> |
+
+---
+
 ## 🌐 How It Works
 1. **ESP32** collects real-time data from sensors.
 2. Data is transmitted wirelessly via **Wi-Fi** or **Bluetooth**.
