@@ -51,7 +51,7 @@ Our system continuously monitors patients' **vital signs** and **critical events
 
 ### Hardware Video
 
-*Temperatur Sensor*
+*Temperature Sensor*
 https://drive.google.com/file/d/1NdAGeLqjoPZvNUzMEhzjwG0RjwxM2KyB/view?usp=sharing
 
 *IV Drip Bag*
@@ -63,7 +63,7 @@ https://drive.google.com/file/d/14fyySwTLVPXoYs3mIukuYB-nn6UY31tf/view?usp=shari
 *Fall Detection*
 https://drive.google.com/file/d/1_Oszz0amC1riKDDpdqzab_BiWN34bAwV/view?usp=sharing
 
-*Arduino Wokring*
+*Arduino Working*
 https://drive.google.com/file/d/13bq23o-s72du2WpbSAxa6upHlGGRc_2-/view?usp=drive_link
 
 ---
@@ -100,7 +100,7 @@ https://drive.google.com/file/d/13bq23o-s72du2WpbSAxa6upHlGGRc_2-/view?usp=drive
 
 - **Microcontroller**: ESP32  
 - **Programming Language**: C++ (Arduino Framework)  
-- **Dashboard**: Python (Flask / Dash) or Web-based (Html , CSS , Js)   
+- **Dashboard**: Web-based (Html , CSS , Js)   
 - **Communication**: Wi-Fi / WebSocket 
 - **Sensors**: MPU6050, MAX30102, MLX90614, MPX5010DP  
 
@@ -116,5 +116,5 @@ https://drive.google.com/file/d/13bq23o-s72du2WpbSAxa6upHlGGRc_2-/view?usp=drive
 ## 💡 Future Improvements
 - Integrate AI/ML for predictive health analytics  
 - Mobile app for patient health notifications  
-- Battery-powered modules with low power optimization  
+- Database integration to support a large number of patients  
 - Extended sensor support for SpO2, ECG  
