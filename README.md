@@ -1,4 +1,4 @@
-# Nursing-Assistant-Iot
+# Nursing-Assistant-IoT
 
 We are developing an IoT-based Nursing Assistant System that continuously monitors critical patient parameters such as fall detection, heart rate, body temperature, and IV drip blockage. The system uses various sensors integrated with ESP32 microcontrollers, and the collected data is transmitted in real time to a central dashboard or healthcare personnel via alerts.
 
@@ -13,4 +13,5 @@ We are developing an IoT-based Nursing Assistant System that continuously monito
 - Scalable & Wireless System that reduces manual workload and human error.
 
 # UI/UX
-![Patient Monitoring Dashboard](ui/Health Overview.jpg)
+
+![Patient Monitoring Dashboard](ui/Health_Overview.jpg)
