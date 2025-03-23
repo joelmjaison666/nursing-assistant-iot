@@ -49,6 +49,23 @@ Our system continuously monitors patients' **vital signs** and **critical events
 3. A **central dashboard** displays data and triggers alerts in case of abnormal readings.
 4. Notifications are displayed on the dashboard .
 
+### Hardware Video
+
+*Temperatur Sensor*
+https://drive.google.com/file/d/1NdAGeLqjoPZvNUzMEhzjwG0RjwxM2KyB/view?usp=sharing
+
+*IV Drip Bag*
+https://drive.google.com/file/d/187anQKqgCJMwmhiz1YGUYUgredNpgKGB/view?usp=sharing
+
+*Heart Rate Sensor*
+https://drive.google.com/file/d/14fyySwTLVPXoYs3mIukuYB-nn6UY31tf/view?usp=sharing
+
+*Fall Detection*
+https://drive.google.com/file/d/1_Oszz0amC1riKDDpdqzab_BiWN34bAwV/view?usp=sharing
+
+*Arduino Wokring*
+https://drive.google.com/file/d/13bq23o-s72du2WpbSAxa6upHlGGRc_2-/view?usp=drive_link
+
 ---
 
 ## 🖥️ UI/UX Screenshots
