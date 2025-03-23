@@ -13,6 +13,7 @@ An **IoT-Based Nursing Assistant System** designed to support healthcare profess
 ✅ **Real-Time Alerts & Notifications**  
 ✅ **Centralized Health Dashboard**  
 ✅ **Scalable, Wireless & Low-Cost Solution**
+✅ **Portable Solution**
 
 ---
 
