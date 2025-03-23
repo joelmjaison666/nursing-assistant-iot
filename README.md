@@ -58,8 +58,11 @@ Our system continuously monitors patients' **vital signs** and **critical events
 ---
 
 ## 📹 Demonstration Video
-[![Watch Demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](Ui/Health%20Overview.jpg)  
+
+[![Watch Demo](Ui/Thumbnail.jpg)](https://drive.google.com/file/d/1V3QEtMIVR62b27t3yrjI1SS2ZBnNuxdJ/view?usp=sharing)
+
 🎥 **Click the thumbnail to watch the full demo!**
+
 
 ---
 
