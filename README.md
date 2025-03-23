@@ -11,7 +11,3 @@ We are developing an IoT-based Nursing Assistant System that continuously monito
 - IV Drip Blockage Detection ensuring uninterrupted medication flow.
 - Real-time Alerts & Dashboard for healthcare staff to act promptly.
 - Scalable & Wireless System that reduces manual workload and human error.
-
-# UI/UX
-
-![Patient Monitoring Dashboard](ui/Health_Overview.jpg)
